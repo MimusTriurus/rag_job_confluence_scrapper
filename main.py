@@ -2,7 +2,7 @@ import os
 
 CONFLUENCE_URL = os.getenv('CONFLUENCE_URL')
 USERNAME = os.getenv('USERNAME')
-API_TOKEN = os.getenv('API_TOKEN')
+CONFLUENCE_API_TOKEN = os.getenv('CONFLUENCE_API_TOKEN')
 CONFLUENCE_SPACE = os.getenv('CONFLUENCE_SPACE')
 PAGE_TITLE = os.getenv('PAGE_TITLE')
 
@@ -78,6 +78,7 @@ def extract_data():
     with open(f'{target_path}/main.md', 'w+') as f:
         f.write(test_content_md)
     print(f'Data extracted from: {CONFLUENCE_URL}')
+    print(f'Token: {CONFLUENCE_API_TOKEN}')
 
 if __name__ == '__main__':
     extract_data()
