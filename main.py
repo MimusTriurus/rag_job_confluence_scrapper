@@ -76,6 +76,7 @@ Presentation: https://confluence.wargaming.net/plugins/servlet/pptslide?attachme
 def extract_data():
     print('=== v2 ===')
     target_path = '/app/confluence_md'
+    os.makedirs(target_path, exist_ok=True)
     try:
         with open(f'{target_path}/main.md', 'w+') as f:
             f.write(test_content_md)
