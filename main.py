@@ -74,8 +74,9 @@ Presentation: https://confluence.wargaming.net/plugins/servlet/pptslide?attachme
 
 
 def extract_data():
+    print('=== v1 ===')
     target_path = 'confluence_md'
-    with open(f'main.md', 'w+') as f:
+    with open(f'{target_path}/main.md', 'w+') as f:
         f.write(test_content_md)
     print(f'Data extracted from: {CONFLUENCE_URL}')
     print(f'Token: {CONFLUENCE_API_TOKEN}')
