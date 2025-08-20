@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 #CMD ["sh", "-c", "echo '🚀 Контейнер запущен!' && exec your_app_command"]
 # Точка входа — запуск вашего main.py
-CMD ["mkdir", "confluence_md"]
+#CMD ["mkdir", "confluence_md"]
 CMD ["python", "main.py"]
 #ENTRYPOINT echo "🚀 Контейнер запущен!" && ls
 #CMD ["pwd"]
