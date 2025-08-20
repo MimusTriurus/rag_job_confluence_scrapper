@@ -74,7 +74,7 @@ Presentation: https://confluence.wargaming.net/plugins/servlet/pptslide?attachme
 
 
 def extract_data():
-    print('=== v1 ===')
+    print('=== v2 ===')
     target_path = '/app/confluence_md'
     try:
         with open(f'{target_path}/main.md', 'w+') as f:
