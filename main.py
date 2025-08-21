@@ -1,4 +1,6 @@
 import os
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
 
 CONFLUENCE_URL = os.getenv('CONFLUENCE_URL')
 USERNAME = os.getenv('USERNAME')
@@ -6,7 +8,7 @@ CONFLUENCE_API_TOKEN = os.getenv('CONFLUENCE_API_TOKEN')
 CONFLUENCE_SPACE = os.getenv('CONFLUENCE_SPACE')
 PAGE_TITLE = os.getenv('PAGE_TITLE')
 
-test_content_md = '''
+CONTENT = '''
 # What is Accord?
 Accord is a framework for online multiplayer game development that provides a set of essential metagame services and takes care of all the communication to help you focus on creating the meta gameplay in your project. With Accord you can build a metagame both around existing client-server solutions, like Unreal Engine or Unity, and on your own.
 
@@ -72,19 +74,37 @@ Presentation: https://confluence.wargaming.net/plugins/servlet/pptslide?attachme
 - Head of Game Technology: Viktor Masalov
 '''
 
+# Конфиг из env
+MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT", "minio.default.svc.cluster.local:9000")
+MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY")
+MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY")
+BUCKET_NAME = os.environ.get("BUCKET_NAME", "test-bucket")
+FILE_NAME = "main.md"
 
-def extract_data():
-    print('=== v2 ===')
-    target_path = '/app/confluence_md'
-    os.makedirs(target_path, exist_ok=True)
+def main():
+    # Подключаемся к MinIO
+    s3 = boto3.resource(
+        's3',
+        endpoint_url=f"http://{MINIO_ENDPOINT}",
+        aws_access_key_id=MINIO_ACCESS_KEY,
+        aws_secret_access_key=MINIO_SECRET_KEY
+    )
+
+    # Создаем бакет, если не существует
     try:
-        with open(f'{target_path}/main.md', 'w+') as f:
-            f.write(test_content_md)
+        s3.meta.client.head_bucket(Bucket=BUCKET_NAME)
+    except ClientError:
+        s3.create_bucket(Bucket=BUCKET_NAME)
+
+    # Загружаем файл
+    try:
+        s3.Object(BUCKET_NAME, FILE_NAME).put(Body=CONTENT)
+        print(f"File {FILE_NAME} successfully uploaded to bucket {BUCKET_NAME}")
+    except NoCredentialsError:
+        print("Credentials not available")
     except Exception as e:
-        print(e)
+        print("Error uploading file:", e)
 
-    print(f'Data extracted from: {CONFLUENCE_URL}')
-    print(f'Token: {CONFLUENCE_API_TOKEN}')
+if __name__ == "__main__":
+    main()
 
-if __name__ == '__main__':
-    extract_data()
