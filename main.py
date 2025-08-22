@@ -75,14 +75,29 @@ Presentation: https://confluence.wargaming.net/plugins/servlet/pptslide?attachme
 '''
 
 # Конфиг из env
-MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT", "minio.default.svc.cluster.local:9000")
+MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT")
 MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY")
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "test-bucket")
 FILE_NAME = "main.md"
 
+def print_args():
+    print(f'=== print confluence args ===')
+    print(f'CONFLUENCE_URL: {CONFLUENCE_URL}')
+    print(f'USERNAME: {USERNAME}')
+    print(f'CONFLUENCE_API_TOKEN: {CONFLUENCE_API_TOKEN}')
+    print(f'CONFLUENCE_SPACE: {CONFLUENCE_SPACE}')
+    print(f'PAGE_TITLE: {PAGE_TITLE}')
+    print(f'=== print storage args ===')
+    print(f'MINIO_ENDPOINT: {MINIO_ENDPOINT}')
+    print(f'MINIO_ACCESS_KEY: {MINIO_ACCESS_KEY}')
+    print(f'MINIO_SECRET_KEY: {MINIO_SECRET_KEY}')
+    print(f'BUCKET_NAME: {BUCKET_NAME}')
+    print(f'===')
+
 def main():
-    # Подключаемся к MinIO
+    print_args()
+
     s3 = boto3.resource(
         's3',
         endpoint_url=f"http://{MINIO_ENDPOINT}",
@@ -90,13 +105,11 @@ def main():
         aws_secret_access_key=MINIO_SECRET_KEY
     )
 
-    # Создаем бакет, если не существует
     try:
         s3.meta.client.head_bucket(Bucket=BUCKET_NAME)
     except ClientError:
         s3.create_bucket(Bucket=BUCKET_NAME)
 
-    # Загружаем файл
     try:
         s3.Object(BUCKET_NAME, FILE_NAME).put(Body=CONTENT)
         print(f"File {FILE_NAME} successfully uploaded to bucket {BUCKET_NAME}")
